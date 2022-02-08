@@ -22,4 +22,4 @@
     - Removed rows with unexpected values (not 0 or 1)
     - Removed column with 0 variance ()
 
-![VIsulaization of the unbalanced classes](./pictures/Class Distributions.png)
+![VIsulaization of the unbalanced classes](https://github.com/gek20/DisasterResponsePipelines/blob/6b578e0b151ee532be6425cd2843c73fd2e63be5/pictures/Class%20Distributions.png)
