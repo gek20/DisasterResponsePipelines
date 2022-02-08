@@ -13,3 +13,13 @@
 3. Run your web app: `python run.py`
 
 4. Click the `PREVIEW` button to open the homepage
+
+
+
+### Data Analysis:
+
+1. Data Cleaning:
+    - Removed rows with unexpected values (not 0 or 1)
+    - Removed column with 0 variance ()
+
+![VIsulaization of the unbalanced classes](./pictures/Class Distributions.png)

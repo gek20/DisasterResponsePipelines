@@ -39,10 +39,23 @@ def remove_duplicates(df):
     assert len(duplicated['id'].unique()) == 0
     return df
 
+def test_boolean_colums(df):
+    d_targets = df.iloc[: , -36:]
+    for c in d_targets.columns:
+        df.drop(df[(df[c] != 0) & (df[c] != 1)].index, inplace=True)
+    return df
+
+def remove_colums_with_zero_variance(df):
+    rows=df.shape[1]
+    df = df.loc[:, (df != df.iloc[0]).any()]
+    print("Removed {} column/columns with 0 variance".format(str(rows-df.shape[1])))
+    return df
 
 def clean_data(df):
     df = extract_categories_info(df)
     df = remove_duplicates(df)
+    df = test_boolean_colums(df)
+    df = remove_colums_with_zero_variance(df)
     return df
 
 
