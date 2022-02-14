@@ -8,20 +8,25 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
-from sklearn.multioutput  import MultiOutputClassifier
+from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report
+from sklearn.linear_model import RidgeClassifier
+from sklearn.neural_network import MLPClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import GridSearchCV
 
 
 def load_data(database_filepath):
-    engine = create_engine('sqlite:///'+database_filepath)
+    engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('Messages', con=engine)
     X = df['message'].values
     Y = df.iloc[:, -35:]
@@ -52,11 +57,23 @@ def build_model():
 
 def evaluate_model(model, X_test, Y_test, category_names):
     y_pred = model.predict(X_test)
-    cr=classification_report(Y_test, y_pred, target_names=category_names)
+    cr = classification_report(Y_test, y_pred, target_names=category_names)
     print(cr)
+
 
 def save_model(model, model_filepath):
     pickle.dump(model, open(model_filepath, 'wb'))
+
+
+def test_model(model, X_train, y_train):
+    parameters = {
+        'clf__estimator': [KNeighborsClassifier(), RandomForestClassifier(), RidgeClassifier(), MLPClassifier()]}
+
+    cv = GridSearchCV(model, param_grid=parameters, scoring='accuracy',verbose=10)
+
+    cv.fit(X_train, y_train)
+
+    print("best score: {:.3f}, best params: {}".format(cv.best_score_, cv.best_params_))
 
 
 def main():
@@ -68,6 +85,9 @@ def main():
 
         print('Building model...')
         model = build_model()
+
+        print('Testing parameters...')
+        test_model(model, X_train, Y_train)
 
         print('Training model...')
         model.fit(X_train, Y_train)
