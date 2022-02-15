@@ -17,12 +17,13 @@ nltk.download('omw-1.4')
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.metrics import classification_report
-from sklearn.linear_model import RidgeClassifier
+from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import GridSearchCV
+from imblearn.over_sampling import SMOTE
 
 
 def load_data(database_filepath):
@@ -45,13 +46,25 @@ def tokenize(text):
 
 
 def build_model():
-    pipeline = Pipeline([
-        ('text_pipeline', Pipeline([
-            ('vect', CountVectorizer(tokenizer=tokenize)),
-            ('tfidf', TfidfTransformer())
-        ])),
-        ('clf', MultiOutputClassifier(RandomForestClassifier()))
-    ])
+    # pipeline = Pipeline([
+    #     ('text_pipeline', Pipeline([
+    #         ('vect', CountVectorizer(tokenizer=tokenize)),
+    #         ('tfidf', TfidfTransformer())
+    #     ])),
+    #     #('sampling', SMOTE()),
+    #     ('clf', MultiOutputClassifier(RandomForestClassifier(class_weight='balanced')))
+    # ])
+
+    from imblearn.pipeline import Pipeline
+
+    text_pipeline = Pipeline([('vect', CountVectorizer(tokenizer=tokenize,
+                                                       ngram_range=(1, 2),
+                                                       max_df=0.75)),
+                              ('tfidf', TfidfTransformer(sublinear_tf=True))])
+    pipeline = Pipeline([('features', FeatureUnion([('text_pipeline', text_pipeline)])),
+                         ('clf', MultiOutputClassifier(RandomForestClassifier(class_weight='balanced')))])
+
+
     return pipeline
 
 
@@ -67,8 +80,8 @@ def save_model(model, model_filepath):
 
 def test_model(model, X_train, y_train):
     parameters = {
-        'clf__estimator': [KNeighborsClassifier(), RandomForestClassifier(), RidgeClassifier(), MLPClassifier()]}
-
+        'clf__estimator': [KNeighborsClassifier(), RandomForestClassifier(class_weight='balanced'), RidgeClassifier(class_weight='balanced')]}
+    # MLPClassifier(hidden_layer_sizes=(128),activation='relu',solver='adam',batch_size=500,shuffle=True)
     cv = GridSearchCV(model, param_grid=parameters, scoring='accuracy',verbose=10)
 
     cv.fit(X_train, y_train)
@@ -88,6 +101,7 @@ def main():
 
         print('Testing parameters...')
         test_model(model, X_train, Y_train)
+        # best score: 0.246, best params: {'clf__estimator': RandomForestClassifier(class_weight='balanced')}
 
         print('Training model...')
         model.fit(X_train, Y_train)
