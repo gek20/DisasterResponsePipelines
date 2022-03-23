@@ -14,7 +14,7 @@ def load_data(messages_filepath, categories_filepath):
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = pd.concat([messages, categories], axis=1, join="inner")
-    df = df.loc[:,~df.columns.duplicated()]
+    df = df.loc[:, ~df.columns.duplicated()]
     return df
 
 
@@ -38,7 +38,7 @@ def extract_categories_info(df):
 
         # convert column from string to numeric
         categories[column] = categories[column].astype("int")
-    df=df.drop(columns=['categories'])
+    df = df.drop(columns=['categories'])
     df = pd.concat([df, categories], axis=1, join="inner")
     return df
 
@@ -55,17 +55,19 @@ def remove_duplicates(df):
     assert len(duplicated['id'].unique()) == 0
     return df
 
+
 def test_boolean_colums(df):
     '''
     test if there are only 0 and 1 in the dataframe
     :param df: dataframe
     :return: dataframe with the data that are not boolean removed
     '''
-    d_targets = df.iloc[: , -36:]
+    d_targets = df.iloc[:, -36:]
     for c in d_targets.columns:
         df.loc[df[c] > 1, c] = 1
         df.drop(df[(df[c] != 0) & (df[c] != 1)].index, inplace=True)
     return df
+
 
 def remove_colums_with_zero_variance(df):
     '''
@@ -73,10 +75,11 @@ def remove_colums_with_zero_variance(df):
     :param df: dataframe
     :return: dataframe with the coloumn with 0 variance removed
     '''
-    rows=df.shape[1]
+    rows = df.shape[1]
     df = df.loc[:, (df != df.iloc[0]).any()]
-    print("Removed {} column/columns with 0 variance".format(str(rows-df.shape[1])))
+    print("Removed {} column/columns with 0 variance".format(str(rows - df.shape[1])))
     return df
+
 
 def clean_data(df):
     '''
@@ -87,7 +90,7 @@ def clean_data(df):
     df = extract_categories_info(df)
     df = remove_duplicates(df)
     df = test_boolean_colums(df)
-    #df = remove_colums_with_zero_variance(df)
+    # df = remove_colums_with_zero_variance(df)
     return df
 
 
@@ -97,7 +100,7 @@ def save_data(df, database_filename):
     :param df: dataframe
     :param database_filename: name of the db
     '''
-    engine = create_engine('sqlite:///'+database_filename)
+    engine = create_engine('sqlite:///' + database_filename)
     df.to_sql('Messages', engine, index=False)
 
 

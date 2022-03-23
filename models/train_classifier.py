@@ -28,6 +28,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.naive_bayes import MultinomialNB
 
+
 def load_data(database_filepath):
     '''
     load the data from the database
@@ -36,10 +37,9 @@ def load_data(database_filepath):
     '''
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('Messages', con=engine)
-    print(df.head())
     X = df['message'].values
     Y = df.iloc[:, -36:]
-    print(Y.sum())
+    # print(Y.sum())
     y = Y.values
     target_names = list(Y.columns)
     return X, y, target_names
@@ -68,13 +68,13 @@ def build_model():
     pipeline = Pipeline([
         ('text_pipeline', Pipeline([
             ('vect', CountVectorizer(tokenizer=tokenize,
-                                 ngram_range=(1, 2),
-                                 max_df=0.75)),
+                                     ngram_range=(1, 2),
+                                     max_df=0.75)),
             ('tfidf', TfidfTransformer())
         ])),
         ('clf', MultiOutputClassifier(estimator=RandomForestClassifier()))
     ])
-    pipeline=test_model(pipeline)
+    pipeline = test_model(pipeline)
     return pipeline
 
 
@@ -106,9 +106,9 @@ def test_model(model):
     :param model: the pipeline we want to test
     :return: gridsearch model. -> the fit() function will return the model with the best parameters
     '''
-    print(model.get_params())
+    # print(model.get_params())
     parameters = {
-        'clf__estimator': [RandomForestClassifier(),KNeighborsClassifier()],
+        'clf__estimator': [RandomForestClassifier(), KNeighborsClassifier()],
         'text_pipeline__vect__ngram_range': ((1, 1), (1, 2)),
         'text_pipeline__vect__max_df': (0.75, 1.0),
         'text_pipeline__vect__max_features': (None, 2000, 5000)
@@ -118,7 +118,7 @@ def test_model(model):
     return cv
 
 
-def create_correlation_matrix(Y,class_names):
+def create_correlation_matrix(Y, class_names):
     '''
     check if there is a correlation among classes and save the graph
     :param classes: the lables for the model
@@ -140,18 +140,13 @@ def main():
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
 
-        create_correlation_matrix(Y, category_names)
+        create_correlation_matrix(Y, category_names)  # create and saving correlation matrix for the labels
 
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, shuffle=True, random_state=20)
 
         print('Building model...')
         model = build_model()
 
-        #print('Testing parameters...')
-        #test_model(model, X_train, Y_train)
-        # best score: 0.246, best params: {'clf__estimator': RandomForestClassifier(class_weight='balanced')}
-        # best score: 0.442, best params: {'clf__estimator': KNeighborsClassifier(), 'features__text_pipeline__tfidf__use_idf': False, 'features__text_pipeline__vect__max_df': 0.75, 'features__text_pipeline__vect__max_features': 5000, 'features__text_pipeline__vect__ngram_range': (1, 2)}
-        # best score: 0.293, best params: {'clf__estimator': OneVsRestClassifier(estimator=LogisticRegression(solver='sag'), n_jobs=1), 'vect__max_df': 1.0, 'vect__max_features': 2000, 'vect__ngram_range': (1, 1)}
         print('Training model...')
         model.fit(X_train, Y_train)
         print("best score: {:.3f}, best params: {}".format(model.best_score_, model.best_params_))

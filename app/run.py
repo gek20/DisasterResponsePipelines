@@ -15,6 +15,11 @@ app = Flask(__name__, template_folder='template')
 
 
 def tokenize(text):
+    '''
+    tokenize the input sentence to use it as input for our model
+    :param text: the input sentence
+    :return: list of tokens
+    '''
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -26,7 +31,7 @@ def tokenize(text):
     return clean_tokens
 
 
-# load data (only one dot is needed on windows)
+# load data (only one dot is needed on Windows)
 engine = create_engine('sqlite:///./data/DisasterResponse.db')
 df = pd.read_sql_table('Messages', engine)
 
