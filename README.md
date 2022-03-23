@@ -45,7 +45,7 @@ Each message could have multiple labels but some of them are really rare.
 
 ![VIsulaization of the unbalanced classes](https://github.com/gek20/DisasterResponsePipelines/blob/6b578e0b151ee532be6425cd2843c73fd2e63be5/pictures/Class%20Distributions.png)
 
-The label "child_alone" is never present, this means that is not giving any useful information at the model during the training.
+The label "child_alone" is never present, this means that is not giving any useful information to the model during the training.
 
 | Labels                 | Count |
 |------------------------|------:|
