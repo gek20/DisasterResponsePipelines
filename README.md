@@ -86,6 +86,51 @@ The label "child_alone" is never present, this means that is not giving any usef
 | other_weather          |  1373 |
 | direct_report          |  5049 |
 
+
+| class                  | precision | recall | f1-score | support |
+|------------------------|-----------|--------|----------|---------|
+| related                | 0.84      | 0.94   | 0.88     | 4009    |
+| request                | 0.82      | 0.49   | 0.61     | 927     |
+| offer                  | 0.00      | 0.00   | 0.00     | 20      |
+| aid_related            | 0.76      | 0.68   | 0.72     | 2194    |
+| medical_help           | 0.63      | 0.11   | 0.19     | 427     |
+| medical_products       | 0.88      | 0.22   | 0.35     | 258     |
+| search_and_rescue      | 0.72      | 0.08   | 0.15     | 160     |
+| security               | 0.25      | 0.01   | 0.02     | 99      |
+| military               | 0.65      | 0.10   | 0.17     | 157     |
+| child_alone            | 0.00      | 0.00   | 0.00     | 0       |
+| water                  | 0.80      | 0.50   | 0.62     | 353     |
+| food                   | 0.80      | 0.73   | 0.76     | 585     |
+| shelter                | 0.81      | 0.55   | 0.65     | 461     |
+| clothing               | 0.76      | 0.25   | 0.38     | 87      |
+| money                  | 1.00      | 0.03   | 0.06     | 127     |
+| missing_people         | 0.00      | 0.00   | 0.00     | 66      |
+| refugees               | 0.54      | 0.09   | 0.15     | 166     |
+| death                  | 0.82      | 0.36   | 0.50     | 247     |
+| other_aid              | 0.57      | 0.07   | 0.12     | 713     |
+| infrastructure_related | 0.00      | 0.00   | 0.00     | 344     |
+| transport              | 0.80      | 0.13   | 0.22     | 256     |
+| buildings              | 0.78      | 0.27   | 0.40     | 269     |
+| electricity            | 0.60      | 0.05   | 0.10     | 112     |
+| tools                  | 0.00      | 0.00   | 0.00     | 36      |
+| hospitals              | 0.00      | 0.00   | 0.00     | 65      |
+| shops                  | 0.00      | 0.00   | 0.00     | 28      |
+| aid_centers            | 0.00      | 0.00   | 0.00     | 60      |
+| other_infrastructure   | 0.00      | 0.00   | 0.00     | 234     |
+| weather_related        | 0.86      | 0.72   | 0.78     | 1484    |
+| floods                 | 0.93      | 0.51   | 0.66     | 450     |
+| storm                  | 0.78      | 0.65   | 0.71     | 501     |
+| fire                   | 1.00      | 0.02   | 0.03     | 61      |
+| earthquake             | 0.89      | 0.77   | 0.83     | 483     |
+| cold                   | 0.56      | 0.14   | 0.23     | 104     |
+| other_weather          | 0.62      | 0.09   | 0.15     | 287     |
+| direct_report          | 0.76      | 0.36   | 0.49     | 1044    |
+|                        |           |        |          |         |
+| micro avg              | 0.81      | 0.56   | 0.66     | 16874   |
+| macro avg              | 0.56      | 0.25   | 0.30     | 16874   |
+| weighted avg           | 0.75      | 0.56   | 0.60     | 16874   |
+| samples avg            | 0.66      | 0.50   | 0.52     | 16874   |
+
 ![Correlation Between Labels](https://github.com/gek20/DisasterResponsePipelines/blob/937e32c0f68412c4eb9081c4295ff772f90a569c/pictures/correlation_matrix_labels.png)
 6. Acknowledgements
  

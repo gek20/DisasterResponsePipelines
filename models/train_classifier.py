@@ -146,7 +146,7 @@ def main():
 
         print('Building model...')
         model = build_model()
-
+        # best score: 0.277, best params: {'clf__estimator': RandomForestClassifier(), 'text_pipeline__vect__max_df': 0.75, 'text_pipeline__vect__max_features': 2000, 'text_pipeline__vect__ngram_range': (1, 2)}
         print('Training model...')
         model.fit(X_train, Y_train)
         print("best score: {:.3f}, best params: {}".format(model.best_score_, model.best_params_))
