@@ -3,30 +3,18 @@
 
 ### Project Components
 
-0. Data 
-Disaster data from Appen 
+0. Data:  
+The Disaster data are collected and made available for us from Appen. The data are contained in 2 csv files ("disaster_categories.csv" and "disaster_messages.csv") in the data directory of the project.  
 
-2. ETL Pipeline
-In a Python script, process_data.py, write a data cleaning pipeline that:
+1. ETL Pipeline:  
+The data are loaded from the csv files, merged, processed and cleaned. Then data are stored in a SQL db.
 
-Loads the messages and categories datasets
-Merges the two datasets
-Cleans the data
-Stores it in a SQLite database
-2. ML Pipeline
-In a Python script, train_classifier.py, write a machine learning pipeline that:
+2. Data Pipelines:  
+Then the data are used to train a pipeline that classify the input messages in multiple classes. The code will use GridSearch to find the best parameters of the pipeline. The trained model is saved as pkl in the models directory of this project.
 
-Loads data from the SQLite database
-Splits the dataset into training and test sets
-Builds a text processing and machine learning pipeline
-Trains and tunes a model using GridSearchCV
-Outputs results on the test set
-Exports the final model as a pickle file
-3. Flask Web App
-We are providing much of the flask web app for you, but feel free to add extra features depending on your knowledge of flask, html, css and javascript. For this part, you'll need to:
+3. Flask App:  
+An interface allows the users to input a message and visualize the classification of the message using a Flask Web App
 
-Modify file paths for database and model as needed
-Add data visualizations using Plotly in the web app. One example is provided for you
 
 
 ### Instructions on how to use the code: 
@@ -44,11 +32,60 @@ Add data visualizations using Plotly in the web app. One example is provided for
 4. Click the `PREVIEW` button to open the homepage
 
 
-
 ### Data Analysis:
 
-1. Data Cleaning:
+1. ETL :
     - Removed rows with unexpected values (not 0 or 1)
-    - Removed column with 0 variance ()
+    - Removed duplicated rows
+    - Extracted labels information
 
+### Data Visualization:
+One of the main problem of the dataset is that the distribution of the data is really unbalanced. 
+Each message could have multiple labels but some of them are really rare.  
 ![VIsulaization of the unbalanced classes](https://github.com/gek20/DisasterResponsePipelines/blob/6b578e0b151ee532be6425cd2843c73fd2e63be5/pictures/Class%20Distributions.png)
+The label "child_alone" is never present, this means that is not giving any useful information at the model during the training.
+
+| Labels                 | Count |
+|------------------------|------:|
+| related                | 20003 |
+| request                |  4447 |
+| offer                  |   117 |
+| aid_related            | 10805 |
+| medical_help           |  2075 |
+| medical_products       |  1309 |
+| search_and_rescue      |   723 |
+| security               |   471 |
+| military               |   857 |
+| child_alone            |     0 |
+| water                  |  1664 |
+| food                   |  2904 |
+| shelter                |  2299 |
+| clothing               |   402 |
+| money                  |   602 |
+| missing_people         |   297 |
+| refugees               |   872 |
+| death                  |  1188 |
+| other_aid              |  3432 |
+| infrastructure_related |  1701 |
+| transport              |  1194 |
+| buildings              |  1325 |
+| electricity            |   530 |
+| tools                  |   159 |
+| hospitals              |   283 |
+| shops                  |   120 |
+| aid_centers            |   309 |
+| other_infrastructure   |  1147 |
+| weather_related        |  7265 |
+| floods                 |  2139 |
+| storm                  |  2432 |
+| fire                   |   282 |
+| earthquake             |  2449 |
+| cold                   |   527 |
+| other_weather          |  1373 |
+| direct_report          |  5049 |
+
+
+6. Acknowledgements
+ 
+Udacity for providing the material for the Data Science Nanodegree Program.
+Dataset provided by ![Appen](https://appen.com/) (Figure Eight).

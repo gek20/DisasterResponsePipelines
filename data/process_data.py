@@ -3,8 +3,14 @@ import pandas as pd
 import re
 from sqlalchemy import create_engine
 
+
 def load_data(messages_filepath, categories_filepath):
-    # load the two csv files and join them using 'id' column
+    '''
+    load the two csv files and join them using 'id' column
+    :param messages_filepath:  path to the csv file with the messages
+    :param categories_filepath:  path to the csv file with the categories
+    :return: dataframe with all the info
+    '''
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = pd.concat([messages, categories], axis=1, join="inner")
@@ -13,6 +19,11 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def extract_categories_info(df):
+    '''
+    extract the categories from the dataset
+    :param df: daaframe
+    :return: dataframe with the categories
+    '''
     categories = df['categories'].str.split(";", expand=True)
     # select the first row of the categories dataframe
     row = categories.iloc[0]
@@ -27,12 +38,17 @@ def extract_categories_info(df):
 
         # convert column from string to numeric
         categories[column] = categories[column].astype("int")
-    df.drop(columns=['categories'])
+    df=df.drop(columns=['categories'])
     df = pd.concat([df, categories], axis=1, join="inner")
     return df
 
 
 def remove_duplicates(df):
+    '''
+    check for duplicates and remove them
+    :param df: dataframe
+    :return: the dataframe without duplicates
+    '''
     df.drop_duplicates(subset="id",
                        keep=False, inplace=True)
     duplicated = df[df['id'].isin(df['id'][df['id'].duplicated()])]
@@ -40,26 +56,47 @@ def remove_duplicates(df):
     return df
 
 def test_boolean_colums(df):
+    '''
+    test if there are only 0 and 1 in the dataframe
+    :param df: dataframe
+    :return: dataframe with the data that are not boolean removed
+    '''
     d_targets = df.iloc[: , -36:]
     for c in d_targets.columns:
+        df.loc[df[c] > 1, c] = 1
         df.drop(df[(df[c] != 0) & (df[c] != 1)].index, inplace=True)
     return df
 
 def remove_colums_with_zero_variance(df):
+    '''
+    if there is 0 variance in a columns it means that it is not an important feature
+    :param df: dataframe
+    :return: dataframe with the coloumn with 0 variance removed
+    '''
     rows=df.shape[1]
     df = df.loc[:, (df != df.iloc[0]).any()]
     print("Removed {} column/columns with 0 variance".format(str(rows-df.shape[1])))
     return df
 
 def clean_data(df):
+    '''
+    step by step cleaning of the dataframe
+    :param df: dataframe
+    :return: cleaned dataframe
+    '''
     df = extract_categories_info(df)
     df = remove_duplicates(df)
     df = test_boolean_colums(df)
-    df = remove_colums_with_zero_variance(df)
+    #df = remove_colums_with_zero_variance(df)
     return df
 
 
 def save_data(df, database_filename):
+    '''
+    save data in database
+    :param df: dataframe
+    :param database_filename: name of the db
+    '''
     engine = create_engine('sqlite:///'+database_filename)
     df.to_sql('Messages', engine, index=False)
 

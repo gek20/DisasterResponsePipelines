@@ -3,6 +3,8 @@ import sys
 from sklearn.model_selection import train_test_split
 from sqlalchemy import create_engine
 import pandas as pd
+import seaborn as sn
+import matplotlib.pyplot as plt
 
 import nltk
 from nltk.corpus import stopwords
@@ -17,26 +19,38 @@ nltk.download('omw-1.4')
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
-from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.pipeline import Pipeline
 from sklearn.metrics import classification_report
 from sklearn.linear_model import RidgeClassifier, LogisticRegression
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import GridSearchCV
-from imblearn.over_sampling import SMOTE
-
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.naive_bayes import MultinomialNB
 
 def load_data(database_filepath):
+    '''
+    load the data from the database
+    :param database_filepath: path to the database
+    :return: pandas dataframes for model input e labels and list of labels
+    '''
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('Messages', con=engine)
+    print(df.head())
     X = df['message'].values
-    Y = df.iloc[:, -35:]
+    Y = df.iloc[:, -36:]
+    print(Y.sum())
     y = Y.values
     target_names = list(Y.columns)
     return X, y, target_names
 
 
 def tokenize(text):
+    '''
+    function to tokenize the sentence removing stop_words
+    :param text: the input sentence
+    :return: the tokens list
+    '''
     stop_words = stopwords.words("english")
     lemmatizer = WordNetLemmatizer()
     text = text.lower()
@@ -46,65 +60,101 @@ def tokenize(text):
 
 
 def build_model():
-    # pipeline = Pipeline([
-    #     ('text_pipeline', Pipeline([
-    #         ('vect', CountVectorizer(tokenizer=tokenize)),
-    #         ('tfidf', TfidfTransformer())
-    #     ])),
-    #     #('sampling', SMOTE()),
-    #     ('clf', MultiOutputClassifier(RandomForestClassifier(class_weight='balanced')))
-    # ])
+    '''
+    create the classification model
+    :return: model pipeline
+    '''
 
-    from imblearn.pipeline import Pipeline
-
-    text_pipeline = Pipeline([('vect', CountVectorizer(tokenizer=tokenize,
-                                                       ngram_range=(1, 2),
-                                                       max_df=0.75)),
-                              ('tfidf', TfidfTransformer(sublinear_tf=True))])
-    pipeline = Pipeline([('features', FeatureUnion([('text_pipeline', text_pipeline)])),
-                         ('clf', MultiOutputClassifier(RandomForestClassifier(class_weight='balanced')))])
-
-
+    pipeline = Pipeline([
+        ('text_pipeline', Pipeline([
+            ('vect', CountVectorizer(tokenizer=tokenize,
+                                 ngram_range=(1, 2),
+                                 max_df=0.75)),
+            ('tfidf', TfidfTransformer())
+        ])),
+        ('clf', MultiOutputClassifier(estimator=RandomForestClassifier()))
+    ])
+    pipeline=test_model(pipeline)
     return pipeline
 
 
-def evaluate_model(model, X_test, Y_test, category_names):
-    y_pred = model.predict(X_test)
-    cr = classification_report(Y_test, y_pred, target_names=category_names)
+def evaluate_model(model, x_test, y_test, category_names):
+    '''
+    evaluate the model and print result
+    :param model: model to evaluate
+    :param X_test: test samples
+    :param Y_test: test labels
+    :param category_names: name of the classes
+    '''
+    y_pred = model.predict(x_test)
+    cr = classification_report(y_test, y_pred, target_names=category_names)
     print(cr)
 
 
 def save_model(model, model_filepath):
+    '''
+    save the model in a pickle format
+    :param model: model
+    :param model_filepath: path where we want to store the model
+    '''
     pickle.dump(model, open(model_filepath, 'wb'))
 
 
-def test_model(model, X_train, y_train):
+def test_model(model):
+    '''
+    testing different parameters of the model using GridSearch and returning the best one
+    :param model: the pipeline we want to test
+    :return: gridsearch model. -> the fit() function will return the model with the best parameters
+    '''
+    print(model.get_params())
     parameters = {
-        'clf__estimator': [KNeighborsClassifier(), RandomForestClassifier(class_weight='balanced'), RidgeClassifier(class_weight='balanced')]}
-    # MLPClassifier(hidden_layer_sizes=(128),activation='relu',solver='adam',batch_size=500,shuffle=True)
-    cv = GridSearchCV(model, param_grid=parameters, scoring='accuracy',verbose=10)
+        'clf__estimator': [RandomForestClassifier(),KNeighborsClassifier()],
+        'text_pipeline__vect__ngram_range': ((1, 1), (1, 2)),
+        'text_pipeline__vect__max_df': (0.75, 1.0),
+        'text_pipeline__vect__max_features': (None, 2000, 5000)
+    }
+    cv = GridSearchCV(model, param_grid=parameters, verbose=10)
 
-    cv.fit(X_train, y_train)
+    return cv
 
-    print("best score: {:.3f}, best params: {}".format(cv.best_score_, cv.best_params_))
+
+def create_correlation_matrix(Y,class_names):
+    '''
+    check if there is a correlation among classes and save the graph
+    :param classes: the lables for the model
+    '''
+    df = pd.DataFrame(Y, columns=class_names)
+    corr_matrix = df.corr()
+    fig, ax = plt.subplots(figsize=(25, 15))
+    ax.set_title('Correlation Matrix classes', fontsize=16)
+    sn.heatmap(corr_matrix, annot=True, cmap='Blues', fmt='.1g')
+    plt.savefig('./pictures/correlation_matrix_labels.png', dpi=300)
 
 
 def main():
+    '''
+    main function of the code, load the data, create and train a classification model and save it as pickle
+    '''
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+
+        create_correlation_matrix(Y, category_names)
+
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, shuffle=True, random_state=20)
 
         print('Building model...')
         model = build_model()
 
-        print('Testing parameters...')
-        test_model(model, X_train, Y_train)
+        #print('Testing parameters...')
+        #test_model(model, X_train, Y_train)
         # best score: 0.246, best params: {'clf__estimator': RandomForestClassifier(class_weight='balanced')}
-
+        # best score: 0.442, best params: {'clf__estimator': KNeighborsClassifier(), 'features__text_pipeline__tfidf__use_idf': False, 'features__text_pipeline__vect__max_df': 0.75, 'features__text_pipeline__vect__max_features': 5000, 'features__text_pipeline__vect__ngram_range': (1, 2)}
+        # best score: 0.293, best params: {'clf__estimator': OneVsRestClassifier(estimator=LogisticRegression(solver='sag'), n_jobs=1), 'vect__max_df': 1.0, 'vect__max_features': 2000, 'vect__ngram_range': (1, 1)}
         print('Training model...')
         model.fit(X_train, Y_train)
+        print("best score: {:.3f}, best params: {}".format(model.best_score_, model.best_params_))
 
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
