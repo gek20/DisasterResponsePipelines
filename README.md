@@ -42,7 +42,9 @@ An interface allows the users to input a message and visualize the classificatio
 ### Data Visualization:
 One of the main problem of the dataset is that the distribution of the data is really unbalanced. 
 Each message could have multiple labels but some of them are really rare.  
+
 ![VIsulaization of the unbalanced classes](https://github.com/gek20/DisasterResponsePipelines/blob/6b578e0b151ee532be6425cd2843c73fd2e63be5/pictures/Class%20Distributions.png)
+
 The label "child_alone" is never present, this means that is not giving any useful information at the model during the training.
 
 | Labels                 | Count |
@@ -84,7 +86,7 @@ The label "child_alone" is never present, this means that is not giving any usef
 | other_weather          |  1373 |
 | direct_report          |  5049 |
 
-
+![Correlation Between Labels](https://github.com/gek20/DisasterResponsePipelines/blob/937e32c0f68412c4eb9081c4295ff772f90a569c/pictures/correlation_matrix_labels.png)
 6. Acknowledgements
  
 Udacity for providing the material for the Data Science Nanodegree Program.
