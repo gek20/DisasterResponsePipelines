@@ -30,8 +30,8 @@ An interface allows the users to input a message and visualize the classificatio
 3. Run your web app: `python run.py`
 
 4. Click the `PREVIEW` button to open the homepage
-5. 
-![VIsulaization of the unbalanced classes](https://github.com/gek20/DisasterResponsePipelines/blob/6b578e0b151ee532be6425cd2843c73fd2e63be5/pictures/Screenshot_working_app.png)
+
+![App screenshot](https://github.com/gek20/DisasterResponsePipelines/blob/d2bb1ceb68e9c9051ce68a52462f6fb632dfba2e/pictures/Screenshot_working_app.PNG)
 
 
 ### Data Analysis:
@@ -90,7 +90,7 @@ The label "child_alone" is never present, this means that is not giving any usef
 
 The most frequents combinations in our dataset are presented in the following pictures. We can notice how the most frequent combinations is without category because the dataset is full of messages that are not related an emergency. 
 
-![VIsulaization of the unbalanced classes](https://github.com/gek20/DisasterResponsePipelines/blob/6b578e0b151ee532be6425cd2843c73fd2e63be5/pictures/TOP_10_combinations.png)
+![Top 10 Combinations](https://github.com/gek20/DisasterResponsePipelines/blob/d2bb1ceb68e9c9051ce68a52462f6fb632dfba2e/pictures/TOP_10_combinations.png)
 
 We can notice also from the following correlation matrix how some categories are frequently correlated:
 
@@ -149,4 +149,4 @@ From the classification report on our model we can notice how the model works re
 6. Acknowledgements
  
 Udacity for providing the material for the Data Science Nanodegree Program.
-Dataset provided by ![Appen](https://appen.com/) (Figure Eight).
+Dataset provided by [Appen](https://appen.com/) (Figure Eight).
