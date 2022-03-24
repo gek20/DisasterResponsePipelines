@@ -149,4 +149,5 @@ From the classification report on our model, we can notice how the model works b
 6. Acknowledgements
  
 Udacity for providing the material for the Data Science Nanodegree Program.
+
 Dataset provided by [Appen](https://appen.com/) (Figure Eight).
