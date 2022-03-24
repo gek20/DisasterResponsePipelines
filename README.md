@@ -30,6 +30,8 @@ An interface allows the users to input a message and visualize the classificatio
 3. Run your web app: `python run.py`
 
 4. Click the `PREVIEW` button to open the homepage
+5. 
+![VIsulaization of the unbalanced classes](https://github.com/gek20/DisasterResponsePipelines/blob/6b578e0b151ee532be6425cd2843c73fd2e63be5/pictures/Screenshot_working_app.png)
 
 
 ### Data Analysis:
@@ -86,6 +88,19 @@ The label "child_alone" is never present, this means that is not giving any usef
 | other_weather          |  1373 |
 | direct_report          |  5049 |
 
+The most frequents combinations in our dataset are presented in the following pictures. We can notice how the most frequent combinations is without category because the dataset is full of messages that are not related an emergency. 
+
+![VIsulaization of the unbalanced classes](https://github.com/gek20/DisasterResponsePipelines/blob/6b578e0b151ee532be6425cd2843c73fd2e63be5/pictures/TOP_10_combinations.png)
+
+We can notice also from the following correlation matrix how some categories are frequently correlated:
+
+
+![Correlation Between Labels](https://github.com/gek20/DisasterResponsePipelines/blob/937e32c0f68412c4eb9081c4295ff772f90a569c/pictures/correlation_matrix_labels.png)
+
+
+### Quality of the Model:
+
+From the classification report on our model we can notice how the model works really bad for some categories. This is due to the fact that the dataset is really unbalanced and that the model had not enough data to learn how to predict that categories. A possible solution could be to use some balancing teqniques to improve the quality of the model (SMOTE, oversampling, undersampling,...).
 
 | class                  | precision | recall | f1-score | support |
 |------------------------|-----------|--------|----------|---------|
@@ -131,7 +146,6 @@ The label "child_alone" is never present, this means that is not giving any usef
 | weighted avg           | 0.75      | 0.56   | 0.60     | 16874   |
 | samples avg            | 0.66      | 0.50   | 0.52     | 16874   |
 
-![Correlation Between Labels](https://github.com/gek20/DisasterResponsePipelines/blob/937e32c0f68412c4eb9081c4295ff772f90a569c/pictures/correlation_matrix_labels.png)
 6. Acknowledgements
  
 Udacity for providing the material for the Data Science Nanodegree Program.

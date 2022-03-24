@@ -39,37 +39,60 @@ df = pd.read_sql_table('Messages', engine)
 model = joblib.load("./models/classifier.pkl")
 
 
+def create_distribution_graph(x, y, title, x_label, y_label):
+    graph = {
+        'data': [
+            Bar(
+                x=x,
+                y=y
+            )
+        ],
+
+        'layout': {
+            'title': title,
+            'yaxis': {
+                'title': x_label
+            },
+            'xaxis': {
+                'title': y_label
+            }
+        }
+    }
+
+    return graph
+
+
 # index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
 def index():
+    graphs = []
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+
+    # graph 1
+    # group by type of message histogram
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+    graphs.append(
+        create_distribution_graph(genre_names, genre_counts, 'Distribution of Message Genres', "Count", "Genre"))
 
-    # create visuals
-    # TODO: Below is an example - modify to create your own visuals
-    graphs = [
-        {
-            'data': [
-                Bar(
-                    x=genre_names,
-                    y=genre_counts
-                )
-            ],
+    # graph 2
+    # group by categories to find out the most frequent combinations
+    d_cat = df.iloc[:, -36:]
+    most_frequent_comb = d_cat.groupby(d_cat.columns.tolist()).size().reset_index(). \
+        rename(columns={0: 'records'}).sort_values('records', ascending=False)
+    most_frequent_comb['cat'] = most_frequent_comb.apply(lambda x: x.index[x == 1].tolist(), axis=1)
+    most_frequent_comb['cat'] = most_frequent_comb['cat'].apply(lambda x: " <br> ".join(x))  # add new line in labels
+    most_frequent_comb = most_frequent_comb.set_index('cat')
+    graphs.append(
+        create_distribution_graph(list(most_frequent_comb.head(10).index), most_frequent_comb.head(10)['records'],
+                                  'Most Frequent Combinations (TOP 10)', "Count", ""))
 
-            'layout': {
-                'title': 'Distribution of Message Genres',
-                'yaxis': {
-                    'title': "Count"
-                },
-                'xaxis': {
-                    'title': "Genre"
-                }
-            }
-        }
-    ]
+    # graph 3
+    most_freq_cat=d_cat.sum().sort_values(ascending=False)
+    graphs.append(
+        create_distribution_graph(list(most_freq_cat.head(10).index), most_freq_cat.head(10),
+                                  'Most Frequent Categories (TOP 10)', "Count", "Categories"))
 
     # encode plotly graphs in JSON
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]

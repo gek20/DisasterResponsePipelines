@@ -64,7 +64,6 @@ def test_boolean_colums(df):
     '''
     d_targets = df.iloc[:, -36:]
     for c in d_targets.columns:
-        df.loc[df[c] > 1, c] = 1
         df.drop(df[(df[c] != 0) & (df[c] != 1)].index, inplace=True)
     return df
 
