@@ -88,7 +88,7 @@ The label "child_alone" is never present, this means that is not giving any usef
 | other_weather          |  1373 |
 | direct_report          |  5049 |
 
-The most frequents combinations in our dataset are presented in the following pictures. We can notice how the most frequent combinations is without category because the dataset is full of messages that are not related an emergency. 
+The most frequent combinations in our dataset are presented in the following pictures. We can notice how the most frequent combinations are without category because the dataset is full of messages that are not related to an emergency. 
 
 ![Top 10 Combinations](https://github.com/gek20/DisasterResponsePipelines/blob/d2bb1ceb68e9c9051ce68a52462f6fb632dfba2e/pictures/TOP_10_combinations.png)
 
@@ -100,7 +100,7 @@ We can notice also from the following correlation matrix how some categories are
 
 ### Quality of the Model:
 
-From the classification report on our model we can notice how the model works really bad for some categories. This is due to the fact that the dataset is really unbalanced and that the model had not enough data to learn how to predict that categories. A possible solution could be to use some balancing teqniques to improve the quality of the model (SMOTE, oversampling, undersampling,...).
+From the classification report on our model, we can notice how the model works badly for some categories. This is due to the fact that the dataset is really unbalanced and that the model had not enough data to learn how to predict that categories. A possible solution could be to use some balancing techniques to improve the quality of the model (SMOTE, oversampling, undersampling,...).
 
 | class                  | precision | recall | f1-score | support |
 |------------------------|-----------|--------|----------|---------|
