@@ -146,7 +146,7 @@ From the classification report on our model, we can notice how the model works b
 | weighted avg           | 0.75      | 0.56   | 0.60     | 16874   |
 | samples avg            | 0.66      | 0.50   | 0.52     | 16874   |
 
-6. Acknowledgements
+### Acknowledgements
  
 Udacity for providing the material for the Data Science Nanodegree Program.
 
